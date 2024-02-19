@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-install.packages("librarian")
+install.packages("librarian", repos = "http://cran.us.r-project.org")
 librarian::shelf(ggplot2)
 ```
 
@@ -22,14 +22,14 @@ games.data <- read.csv("data/games.csv")
 
 How does it look?
 ```{r}
-head(games.data)
+head(games.data, 3)
 summary(games.data)
 ```
 
 Outliers in the `year` column. Remove these:
 
 ```{r}
-games.data <- games.data[games.data$year > 1900 & games.data$year < 2019, ]
+games.data <- games.data[games.data$year < 2019, ]
 ```
 
 ## Analyse
@@ -38,7 +38,8 @@ Have games become better over time? Exclude games before 1900. Lots of data, so 
 
 ```{r}
 third.q <- summary(games.data$users_rated)["3rd Qu."]
-ggplot(data=games.data[[games.data$year > 1900 & games.data$users_rated > third.q, ], mapping = aes(x=year, y=bayes_average))+
+ggplot(data=games.data[games.data$year > 1900 & games.data$users_rated > third.q, ],
+       mapping = aes(x=year, y=bayes_average))+
   geom_point()+
   labs(title="Board Game Ratings by Year")
 ```
