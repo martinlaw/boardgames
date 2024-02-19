@@ -1,0 +1,46 @@
+---
+title: "Board Game Analysis"
+author: "Martin Law"
+date: "`r Sys.Date()`"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("librarian", repos = "http://cran.us.r-project.org")
+librarian::shelf(ggplot2, here)
+```
+
+## Load
+
+Here we load the data:
+```{r}
+games.data <- read.csv(here("data", "games.csv"))
+```
+
+## Clean
+
+How does it look?
+```{r}
+head(games.data, 3)
+summary(games.data)
+```
+
+Outliers in the `year` column. Remove these:
+  
+```{r}
+games.data <- games.data[games.data$year < 2019, ]
+```
+
+## Analyse
+
+Have games become better over time? Exclude games before 1900. Lots of data, so include only the games with the most ratings (top quartile):
+  
+```{r}
+third.q <- summary(games.data$users_rated)["3rd Qu."]
+ggplot(data=games.data[games.data$year > 1900 & games.data$users_rated > third.q, ],
+       mapping = aes(x=year, y=bayes_average))+
+  geom_point()+
+  labs(title="Board Game Ratings by Year")
+```
+
